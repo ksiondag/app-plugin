@@ -10,5 +10,8 @@
     "fake"
   ],
   "author": "Faker",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "sqlite3": "^3.1.4"
+  }
 }

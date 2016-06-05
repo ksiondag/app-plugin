@@ -48,7 +48,9 @@ module.exports = function (express, address, callback) {
         function (stdout) {
             callback(
                 null,
-                require(stdout.split('@')[0])(express)
+                require(
+                    stdout.split('@')[0].split(/\s/).pop()
+                )(express)
             );
         },
         function () {

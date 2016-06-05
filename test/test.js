@@ -13,6 +13,14 @@ const gitRepoSetup = function () {
 };
 
 describe('app-plugin', function () {
+    afterEach(function (done) {
+        this.timeout(10000);
+        // Cleanup
+        exec('npm uninstall dynamic', function () {
+            exec('rm -rf test/static/.git static_apps', done);
+        });
+    });
+
     const staticTest = function (done) {
         appPlugin(express, path.join(__dirname, 'static'), (err, subapp) => {
             if (err) {
@@ -44,17 +52,11 @@ describe('app-plugin', function () {
         );
     };
 
-    const destroyGitRepo = function (callback) {
-        exec('rm -rf test/static/.git static_apps', callback);
-    };
-
     it('should clone git repos into a static_apps area', function (done) {
         this.timeout(5000);
         createGitRepo(function () {
             staticTest(function (err) {
-                destroyGitRepo(function () {
-                    done(err);
-                });
+                done(err);
             });
         });
     });
@@ -67,25 +69,17 @@ describe('app-plugin', function () {
             appPlugin(express, path.join(__dirname, 'static'), () => {
                 // Running static test
                 staticTest(function (err) {
-                    destroyGitRepo(function () {
-                        done(err);
-                    });
+                    done(err);
                 });
             });
         });
     });
 
     it('should connect to express webapps dynamically', function (done) {
-        const cleanup = function (err) {
-            exec('npm uninstall dynamic', function () {
-                done(err);
-            });
-        }
-
-        this.timeout(10000);
+        this.timeout(30000);
         appPlugin(express, path.join(__dirname, 'dynamic'), (err, subapp) => {
             if (err) {
-                cleanup(err);
+                done(err);
             }
 
             const app = express();
@@ -97,8 +91,8 @@ describe('app-plugin', function () {
                     assert.equal(res.text.trim(), 'Dynamic');
                 })
                 .end(function (err, res) {
-                    cleanup(err);
-                });
+                    done(err);
+                })
             ;
         });
     });
