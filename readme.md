@@ -53,8 +53,7 @@ These are apps that use express apps themselves and have a server component.
 These need to have a proper package.json with all actual requirements saved.
 
 `require(<webapp>)` must return a function that takes the express module as its
-only argument. This function will return an app, or call a callback with the
-subapp as the first argument.
+only argument. This function must return an express app or router.
 
 ```javascript
 const express = require('express');
@@ -80,18 +79,5 @@ const pluginModule = require('exampleNpmApp');
 
 subapp = pluginModule(express);
 app.use(subapp);
-```
-
-Or (if async):
-
-```javascript
-const express = require('express');
-const app = express();
-
-const pluginModule = require('exampleNpmApp');
-
-pluginModule(express, functino (subapp) {
-    app.use(subapp);
-});
 ```
 
