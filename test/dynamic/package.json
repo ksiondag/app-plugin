@@ -1,0 +1,14 @@
+{
+  "name": "dynamic",
+  "version": "1.0.0",
+  "description": "Fake npm module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "fake"
+  ],
+  "author": "Faker",
+  "license": "ISC"
+}
