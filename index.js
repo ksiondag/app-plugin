@@ -21,15 +21,22 @@ const npm = function (address, callback, errback) {
 
 const git = function (address, dir, callback, errback) {
     fs.mkdir(dir, function () {
+        const staticDir = function (out) {
+            return path.join(dir, out.split("'")[1].split("'")[0]);
+        };
         exec(
             `git clone ${address}`,
             {cwd: dir},
             result(
                 function (_, out) {
-                    const basename = out.split("'")[1].split("'")[0];
-                    callback(path.join(dir, basename));
+                    callback(staticDir(out));
                 },
-                errback
+                function (_, err) {
+                    if (err.includes('already exists')) {
+                        return callback(staticDir(err));
+                    }
+                    errback();
+                }
             )
         );
     });

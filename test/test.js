@@ -35,13 +35,41 @@ describe('app-plugin', function () {
         staticTest(done);
     });
 
+    const createGitRepo = function (callback) {
+        const cwd = path.join(__dirname, 'static');
+        exec(
+            'git init; git add index.html; git commit -m "M"',
+            {cwd: cwd},
+            callback
+        );
+    };
+
+    const destroyGitRepo = function (callback) {
+        exec('rm -rf test/static/.git static_apps', callback);
+    };
+
     it('should clone git repos into a static_apps area', function (done) {
         this.timeout(5000);
-        const cwd = path.join(__dirname, 'static');
-        exec('git init; git add index.html; git commit -m "M"', {cwd: cwd}, function () {
+        createGitRepo(function () {
             staticTest(function (err) {
-                exec('rm -rf test/static/.git static_apps', function () {
+                destroyGitRepo(function () {
                     done(err);
+                });
+            });
+        });
+    });
+
+    it('should use repo when already in static_apps area', function (done) {
+        this.timeout(5000);
+        // Creating git repo
+        createGitRepo(function () {
+            // Cloning git repo into static_apps area
+            appPlugin(express, path.join(__dirname, 'static'), () => {
+                // Running static test
+                staticTest(function (err) {
+                    destroyGitRepo(function () {
+                        done(err);
+                    });
                 });
             });
         });
@@ -54,7 +82,7 @@ describe('app-plugin', function () {
             });
         }
 
-        this.timeout(5000);
+        this.timeout(10000);
         appPlugin(express, path.join(__dirname, 'dynamic'), (err, subapp) => {
             if (err) {
                 cleanup(err);
